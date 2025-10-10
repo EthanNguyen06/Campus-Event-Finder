@@ -1,0 +1,24 @@
+/* Reset default body margins (scoped as much as possible) */
+.home-page {
+	/* Remove top spacing */
+	padding-top: 0;
+	margin-top: 0;
+	font-family: system-ui, sans-serif;
+	/* Optional: minimal side padding */
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.home-page__title {
+	margin-top: 0;
+}
+
+/* Override Vite starter global centering that pushes content down */
+body {
+	align-items: flex-start; /* align to top when body is display:flex in index.css */
+}
+
+/* In case #root has padding from other styles, force no top padding here */
+#root {
+	padding-top: 0 !important;
+}
