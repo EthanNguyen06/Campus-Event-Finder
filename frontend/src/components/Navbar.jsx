@@ -14,12 +14,11 @@ export default function Navbar() {
       </Link>
 
       <div className="nav-buttons">
-        {onHome && (
           <>
+            <Link className="nav-button" to="/home">Home</Link>
             <Link className="nav-button" to="/events">Events</Link>
             <Link className="login-button" to="/login">Login</Link>
           </>
-        )}
       </div>
     </nav>
   );
