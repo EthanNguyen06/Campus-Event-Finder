@@ -26,6 +26,33 @@ const MOCK_EVENTS = [
     location: "Goodwin Hall 190",
     category: "Technology",
     image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&h=600&fit=crop"
+  },
+  {
+    id: 4,
+    title: "Charity Run",
+    description: "5K run to raise funds for local shelters.",
+    date: "2025-10-28T08:00:00Z",
+    location: "Duck Pond Trail",
+    category: "Sports",
+    image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&h=600&fit=crop"
+  },
+  {
+    id: 5,
+    title: "Cultural Night",
+    description: "An evening celebrating global food, music, and dance.",
+    date: "2025-11-12T19:00:00Z",
+    location: "Burruss Auditorium",
+    category: "Culture",
+    image: "https://images.unsplash.com/photo-1508672019048-805c876b67e2?w=800&h=600&fit=crop"
+  },
+  {
+    id: 6,
+    title: "Entrepreneurship Panel",
+    description: "Startup founders discuss how they built their companies.",
+    date: "2025-11-20T17:00:00Z",
+    location: "Newman Library Multipurpose Room",
+    category: "Business",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop"
   }
 ];
 
