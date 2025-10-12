@@ -1,0 +1,104 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar {
+  background-color: #630031; 
+  padding: 15px 40px;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  width: 100%;
+  position: fixed; 
+  top: 0; 
+  left: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.navbar-title {
+  color: white;
+  font-size: 2.7rem;
+  font-weight: bold;
+  margin: 0;
+  cursor: pointer; 
+  transition: opacity 0.2s ease;
+}
+
+.navbar-title:hover {
+  opacity: 0.8; 
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-button {
+  background-color: #CF4420;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 7px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 30px;
+}
+
+.nav-button:hover {
+  background-color: #b33a1a;
+}
+
+.login-button {
+  background-color: #f0f0f0; 
+  color: #630031; 
+  border: 2px solid #630031; 
+  padding: 10px 25px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 930px;
+}
+
+.login-button:hover {
+  background-color: #630031; 
+  color: white; 
+}
+
+.event-page {
+  padding: 60px 60px;
+  min-height: 100vh;
+}
+
+.page-shell{
+  max-width: 1200px;
+  margin:0 auto;
+  padding:10px clamp(16px,4vw,32px) 64px;
+}
+
+.page-title{
+  margin:100px 0 30px;
+  color: #67002e;
+  font-size:2.25rem;
+  line-height:1.2;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+  gap: 10px;
+}
+
+.navbar-logo {
+  height: 36px;
+  width: auto;
+  display: block;
+}
