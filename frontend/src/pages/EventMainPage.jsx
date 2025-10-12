@@ -18,7 +18,7 @@ function EventMainPage() {
     <>
       <Navbar />
 
-      <div className="event-page">
+      <div className="page-shell">
         <h1 className="page-title">Campus Events</h1>
         <div className="event-grid">
           {events.map((event) => (

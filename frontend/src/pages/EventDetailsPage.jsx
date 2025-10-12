@@ -15,7 +15,6 @@ export default function EventDetailPage() {
       try {
         const e = await getEvent(id);
         setEvent(e);
-        document.title = `${e.title} • Event Finder`;
       } catch {
         setErr("Event not found");
       } finally {
@@ -27,7 +26,7 @@ export default function EventDetailPage() {
   return (
     <>
       <Navbar />
-      <div className="event-detail-shell">
+      <div className="page-shell">
         {loading ? (
           <div className="event-content">Loading…</div>
         ) : err || !event ? (
