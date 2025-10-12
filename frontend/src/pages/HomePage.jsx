@@ -1,10 +1,79 @@
-import '../styles/HomePage.css'
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import EventBox from "../components/EventBox";
+import { listEvents } from "../api/events";
+import FeatureCard from "../components/FeatureCard";
+import "../styles/HomePage.css";
 
 export default function HomePage() {
-	return (
-		<main className="home-page">
-			<h1 className="home-page__title">Home Page</h1>
-			<p>Welcome to the Campus Event Finder!</p>
-		</main>
-	)
+  const [upcoming, setUpcoming] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const { items } = await listEvents();
+      // sort by date and take the next 3
+      const nextThree = [...items]
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .slice(0, 3);
+      setUpcoming(nextThree);
+    })();
+  }, []);
+
+  return (
+    <>
+      <Navbar />
+
+      {/* HERO */}
+      <header className="home-hero">
+        <div className="home-hero-inner">
+          <h1 className="home-title">Find Your Next Hokie Moment</h1>
+          <p className="home-subtitle">
+            One place everything happening at Virginia Tech.
+          </p>
+          <div className="home-cta-row">
+            <Link to="/events" className="cta cta-primary">Browse Events</Link>
+            <Link to="/login" className="cta cta-secondary">Sign In</Link>
+          </div>
+        </div>
+      </header>
+
+      {/* FEATURES */}
+      <section className="home-section">
+        <div className="section-header">
+          <h2 className="section-title">Why use Event Finder?</h2>
+        </div>
+
+        <div className="feature-grid">
+          <FeatureCard
+            title="Filters that matter"
+            text="See events by category like Music, Tech, Sports, and more."
+            emoji="🎯"
+          />
+          <FeatureCard
+            title="Save & RSVP"
+            text="Keep a personal list and let organizers know you’re coming."
+            emoji="📌"
+          />
+          <FeatureCard
+            title="Stay in the loop"
+            text="Get alerted when new events match your interests."
+            emoji="🔔"
+          />
+        </div>
+      </section>
+
+      {/* PREVIEW */}
+      <section className="home-section">
+        <div className="section-header">
+          <h2 className="section-title">Coming up soon</h2>
+          <Link to="/events" className="link-more">View all events →</Link>
+        </div>
+
+        <div className="event-grid">
+          {upcoming.map(e => <EventBox key={e.id} event={e} />)}
+        </div>
+      </section>
+    </>
+  );
 }
