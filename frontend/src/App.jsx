@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import EventMainPage from "./pages/EventMainPage";
 import EventDetailPage from "./pages/EventDetailsPage";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Route path="/home" element={<HomePage />} />
       <Route path="/events" element={<EventMainPage />} />
       <Route path="/events/:id" element={<EventDetailPage />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="*" element={<div className="container">Not found</div>} />
     </Routes>
   );
