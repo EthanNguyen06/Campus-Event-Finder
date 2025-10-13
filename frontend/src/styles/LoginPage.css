@@ -67,17 +67,18 @@
     margin-bottom: 1rem;
 }
 
-h1, h2 {
+.login-container h1, 
+.login-container h2 {
     text-align: center;
     color: #333;
     margin-bottom: 1.5rem;
 }
 
-h1 {
+.login-container h1 {
     font-size: 2rem;
     margin-bottom: 1rem;
 }
 
-h2 {
+.login-container h2 {
     font-size: 1.5rem;
 }
