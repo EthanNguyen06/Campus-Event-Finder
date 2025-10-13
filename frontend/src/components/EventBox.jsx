@@ -1,5 +1,5 @@
-import "../styles/components.css";
 import { Link } from "react-router-dom";
+import "../styles/EventBox.css";
 
 function EventBox({ event }) {
   return (

@@ -63,7 +63,10 @@ html, body {
   color: #fff;
   box-shadow: 0 6px 16px rgba(207,68,32,.25);
 }
-.cta-primary:hover { filter: brightness(0.95); }
+.cta-primary:hover { 
+  background: var(--vt-maroon);
+  color: white;
+}
 
 .cta-secondary {
   background: #fff;

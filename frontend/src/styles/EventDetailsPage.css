@@ -11,12 +11,6 @@ body {
   background: var(--bg);
 }
 
-.event-detail-shell {
-  max-width: 1100px;
-  margin: 30px auto 80px;
-  padding: 0 24px;
-}
-
 .event-hero {
   background: var(--card-bg);
   border-radius: var(--radius);

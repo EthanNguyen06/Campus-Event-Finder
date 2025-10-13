@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import "../styles/layout.css";
 import vtLogo from "../assets/Virginia_Tech_Hokies_logo.png";
+import "../styles/Navbar.css";
 
 export default function Navbar() {
   const { pathname } = useLocation();
