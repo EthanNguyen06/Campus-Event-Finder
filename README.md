@@ -103,19 +103,11 @@ Sample data includes 5–6 example events (Hackathon, Career Fair, etc.).
 
 ---
 
-### Connecting to the Database (Optional)
+### Connecting to the Database
 
-You can connect to Supabase directly using `psql`:
-
-```bash
-psql <YOUR_SUPABASE_CONNECTION_URL>
-```
-
-or use the SQL Editor in the Supabase dashboard to run queries.
-
----
-
-## 🧑‍🤝‍🧑 For Teammates
+initial connection to datbase: vscode://ms-ossdata.vscode-pgsql/connect?server=campus-event-finder.postgres.database.azure.com&authenticationType=AzureMFA&database=postgres&port=5432&user=campus_admin
+connect to database as user: psql "host=campus-event-finder.postgres.database.azure.com port=5432 dbname=postgres user=campus_admin password=events3704! sslmode=require"
+-- allows you to view and edit database with queries (ex: SELECT * FROM events;)
 
 ### Running Locally
 
