@@ -29,7 +29,7 @@ export default function HomePage() {
         <div className="home-hero-inner">
           <h1 className="home-title">Find Your Next Hokie Moment</h1>
           <p className="home-subtitle">
-            One place everything happening at Virginia Tech.
+            One place for everything happening at Virginia Tech.
           </p>
           <div className="home-cta-row">
             <Link to="/events" className="cta cta-primary">Browse Events</Link>
