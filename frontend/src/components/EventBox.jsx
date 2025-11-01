@@ -1,13 +1,11 @@
 import { Link } from "react-router-dom";
 import "../styles/EventBox.css";
 
-function EventBox({ event }) {
+export default function EventBox({ event }) {
   return (
       <Link to={`/events/${event.id}`} className="event-box">
-          {event.image && <img src={event.image} alt={event.title} className="event-image" />}
+          {event.image_url && <img src={event.image_url} alt={event.title} className="event-image" />}
           <h3 className="event-name">{event.title}</h3>
         </Link>
   )
 }
-
-export default EventBox;

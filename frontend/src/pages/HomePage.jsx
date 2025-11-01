@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import EventBox from "../components/EventBox";
 import { listEvents } from "../api/events";
+import EventBox from "../components/EventBox";
 import FeatureCard from "../components/FeatureCard";
+import Navbar from "../components/Navbar";
 import "../styles/HomePage.css";
 
 export default function HomePage() {
@@ -11,10 +11,10 @@ export default function HomePage() {
 
   useEffect(() => {
     (async () => {
-      const { items } = await listEvents();
+      const { events } = await listEvents();
       // sort by date and take the next 3
-      const nextThree = [...items]
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
+      const nextThree = [...events]
+        .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
         .slice(0, 3);
       setUpcoming(nextThree);
     })();

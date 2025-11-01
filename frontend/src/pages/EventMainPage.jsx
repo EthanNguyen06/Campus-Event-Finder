@@ -4,13 +4,13 @@ import { listEvents } from "../api/events";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 
-function EventMainPage() {
+export default function EventMainPage() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
     (async () => {
-      const { items } = await listEvents();
-      setEvents(items);
+      const { events } = await listEvents();
+      setEvents(events);
     })();
   }, []);
 
@@ -29,5 +29,3 @@ function EventMainPage() {
     </>
   )
 }
-
-export default EventMainPage
