@@ -1,24 +1,25 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-// Create the context
 const AuthContext = createContext();
 
-// Hook for easy access
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 }
 
-// Provider component
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch current user on mount (uses backend /api/auth/me)
+  // Fetch user on mount (persistent cookie)
   useEffect(() => {
     async function fetchUser() {
       try {
         const res = await fetch("http://localhost:5000/api/auth/me", {
-          credentials: "include", // send cookie
+          credentials: "include",
         });
         if (res.ok) {
           const data = await res.json();
@@ -27,17 +28,16 @@ export function AuthProvider({ children }) {
           setUser(null);
         }
       } catch (err) {
-        console.error("Error fetching user:", err);
+        console.error("Auth fetch failed:", err);
         setUser(null);
       } finally {
         setLoading(false);
       }
     }
-
     fetchUser();
   }, []);
 
-  // Helper: login
+  // Authentication helpers
   async function login(email, password) {
     const res = await fetch("http://localhost:5000/api/auth/login", {
       method: "POST",
@@ -51,7 +51,6 @@ export function AuthProvider({ children }) {
     return data;
   }
 
-  // Helper: register
   async function register(username, email, password) {
     const res = await fetch("http://localhost:5000/api/auth/register", {
       method: "POST",
@@ -62,10 +61,9 @@ export function AuthProvider({ children }) {
     if (!res.ok) throw new Error("Registration failed");
     const data = await res.json();
     setUser(data.user);
-    return data;
+    return data.user;
   }
 
-  // Helper: logout
   async function logout() {
     await fetch("http://localhost:5000/api/auth/logout", {
       method: "POST",
@@ -74,7 +72,14 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
-  const value = { user, loading, login, register, logout };
+  const value = {
+    user,
+    loading,
+    isAuthenticated: !!user,
+    login,
+    register,
+    logout,
+  };
 
   return (
     <AuthContext.Provider value={value}>
