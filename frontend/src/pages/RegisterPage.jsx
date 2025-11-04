@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import "../styles/LoginPage.css";
+import "../styles/RegisterPage.css";
 
 function RegisterPage() {
   const [username, setUsername] = useState("");
@@ -11,11 +11,12 @@ function RegisterPage() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // --- API call to backend ---
   async function registerUser(username, email, password) {
     const res = await fetch("http://localhost:5000/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", // important for cookies
+      credentials: "include", // keeps session cookies
       body: JSON.stringify({ username, email, password }),
     });
     if (!res.ok) {
@@ -25,6 +26,7 @@ function RegisterPage() {
     return res.json();
   }
 
+  // --- Handle Form Submit ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username || !email || !password) {
@@ -40,7 +42,7 @@ function RegisterPage() {
       setSuccess(data.message);
       console.log("User created:", data.user);
 
-      // redirect or login automatically
+      // redirect or auto-login after short delay
       setTimeout(() => (window.location.href = "/"), 1000);
     } catch (err) {
       console.error(err);
@@ -50,6 +52,7 @@ function RegisterPage() {
     }
   };
 
+  // --- Render ---
   return (
     <>
       <Navbar />
@@ -57,38 +60,49 @@ function RegisterPage() {
         <h1>Create Account</h1>
         <form onSubmit={handleSubmit} className="register-form">
           <div>
-            <label htmlFor="username">Username:</label>
+            <label htmlFor="username">Username</label>
             <input
               type="text"
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              placeholder="Enter your username"
             />
           </div>
+
           <div>
-            <label htmlFor="email">Email:</label>
+            <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              placeholder="Enter your email"
             />
           </div>
+
           <div>
-            <label htmlFor="password">Password:</label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              placeholder="Enter your password"
             />
           </div>
+
           {error && <div className="error-message">{error}</div>}
           {success && <div className="success-message">{success}</div>}
+
           <button type="submit" disabled={loading}>
             {loading ? "Creating..." : "Sign Up"}
           </button>
         </form>
+
         <p className="login-link">
           Already have an account? <Link to="/login">Login here</Link>
         </p>
