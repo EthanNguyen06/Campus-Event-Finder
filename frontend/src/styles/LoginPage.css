@@ -82,3 +82,20 @@
 .login-container h2 {
     font-size: 1.5rem;
 }
+
+.register-link,
+.login-link {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.register-link a,
+.login-link a {
+  color: #0078ff;
+  text-decoration: none;
+}
+
+.register-link a:hover,
+.login-link a:hover {
+  text-decoration: underline;
+}

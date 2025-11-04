@@ -4,15 +4,16 @@ import { listEvents } from "../api/events";
 import EventBox from "../components/EventBox";
 import FeatureCard from "../components/FeatureCard";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext"; // ✅ add this
 import "../styles/HomePage.css";
 
 export default function HomePage() {
   const [upcoming, setUpcoming] = useState([]);
+  const { user, isAuthenticated, loading } = useAuth(); // ✅ access auth state
 
   useEffect(() => {
     (async () => {
       const { events } = await listEvents();
-      // sort by date and take the next 3
       const nextThree = [...events]
         .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
         .slice(0, 3);
@@ -31,9 +32,18 @@ export default function HomePage() {
           <p className="home-subtitle">
             One place for everything happening at Virginia Tech.
           </p>
+
           <div className="home-cta-row">
-            <Link to="/events" className="cta cta-primary">Browse Events</Link>
-            <Link to="/login" className="cta cta-secondary">Sign In</Link>
+            <Link to="/events" className="cta cta-primary">
+              Browse Events
+            </Link>
+
+            {/* 👇 Only show Sign In if not authenticated */}
+            {!loading && !isAuthenticated && (
+              <Link to="/login" className="cta cta-secondary">
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -67,11 +77,15 @@ export default function HomePage() {
       <section className="home-section">
         <div className="section-header">
           <h2 className="section-title">Coming up soon</h2>
-          <Link to="/events" className="link-more">View all events →</Link>
+          <Link to="/events" className="link-more">
+            View all events →
+          </Link>
         </div>
 
         <div className="event-grid">
-          {upcoming.map(e => <EventBox key={e.id} event={e} />)}
+          {upcoming.map((e) => (
+            <EventBox key={e.id} event={e} />
+          ))}
         </div>
       </section>
     </>

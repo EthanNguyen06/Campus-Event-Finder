@@ -13,6 +13,14 @@ CREATE TABLE events (
     image_url TEXT
 );
 
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(100) UNIQUE NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- Insert sample events
 INSERT INTO events (id, title, description, start_time, end_time, location, category, image_url) VALUES
 (1, 'Fall Concert', 'Live bands and food trucks on the quad.',
