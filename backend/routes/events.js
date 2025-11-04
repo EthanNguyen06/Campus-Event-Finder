@@ -1,0 +1,159 @@
+const express = require("express");
+const pool = require("../db");
+const authenticate = require("../middleware/authenticate");
+const upload = require("../middleware/upload");
+const fs = require("fs");
+const path = require("path");
+
+const router = express.Router();
+
+/* -------------------- CREATE EVENT -------------------- */
+router.post("/", authenticate, async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      category,
+      location,
+      start_time,
+      end_time,
+      image_url,
+    } = req.body;
+
+    if (!title || !start_time || !end_time || !location) {
+      return res
+        .status(400)
+        .json({ message: "Title, start_time, end_time, and location are required." });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO events
+        (title, description, category, location, start_time, end_time, image_url, created_by_user_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING *`,
+      [title, description, category, location, start_time, end_time, image_url, req.user.id]
+    );
+
+    const newEvent = result.rows[0];
+    const userRes = await pool.query("SELECT username FROM users WHERE id = $1", [req.user.id]);
+    newEvent.created_by_username = userRes.rows[0]?.username || null;
+
+    res.status(201).json(newEvent);
+  } catch (err) {
+    console.error("Error creating event:", err);
+    res.status(500).json({ message: "Error creating event" });
+  }
+});
+
+/* -------------------- EDIT EVENT -------------------- */
+router.patch("/:id", authenticate, upload.single("image"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query("SELECT * FROM events WHERE id = $1", [id]);
+    const event = result.rows[0];
+    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (event.created_by_user_id !== req.user.id)
+      return res.status(403).json({ message: "You can only edit your own events." });
+
+    // Handle image replacement
+    let image_url = event.image_url;
+    if (req.file) {
+      if (image_url) {
+        const oldPath = path.join(__dirname, "../", image_url);
+        fs.unlink(oldPath, (err) => {
+          if (err) console.warn("Failed to delete old image:", err.message);
+        });
+      }
+      image_url = `/uploads/${req.file.filename}`;
+    }
+
+    const { title, description, category, location, start_time, end_time } = req.body;
+
+    const updated = await pool.query(
+      `UPDATE events
+       SET title = COALESCE($1, title),
+           description = COALESCE($2, description),
+           category = COALESCE($3, category),
+           location = COALESCE($4, location),
+           start_time = COALESCE($5, start_time),
+           end_time = COALESCE($6, end_time),
+           image_url = COALESCE($7, image_url),
+           updated_at = NOW()
+       WHERE id = $8
+       RETURNING *`,
+      [title, description, category, location, start_time, end_time, image_url, id]
+    );
+
+    const updatedEvent = updated.rows[0];
+    const userRes = await pool.query("SELECT username FROM users WHERE id = $1", [req.user.id]);
+    updatedEvent.created_by_username = userRes.rows[0]?.username || null;
+
+    res.json(updatedEvent);
+  } catch (err) {
+    console.error("Error updating event:", err);
+    res.status(500).json({ message: "Error updating event" });
+  }
+});
+
+/* -------------------- DELETE EVENT -------------------- */
+router.delete("/:id", authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query("SELECT * FROM events WHERE id = $1", [id]);
+    const event = result.rows[0];
+    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (event.created_by_user_id !== req.user.id)
+      return res.status(403).json({ message: "You can only delete your own events" });
+
+    if (event.image_url) {
+      const oldPath = path.join(__dirname, "../", event.image_url);
+      fs.unlink(oldPath, (err) => {
+        if (err) console.warn("Failed to delete old image:", err.message);
+      });
+    }
+
+    await pool.query("DELETE FROM events WHERE id = $1", [id]);
+    res.json({ message: "Event deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting event:", err);
+    res.status(500).json({ message: "Error deleting event" });
+  }
+});
+
+/* -------------------- GET ONE EVENT -------------------- */
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(
+      `SELECT e.*, u.username AS created_by_username
+       FROM events e
+       LEFT JOIN users u ON e.created_by_user_id = u.id
+       WHERE e.id = $1`,
+      [id]
+    );
+    if (result.rows.length === 0)
+      return res.status(404).json({ message: "Event not found" });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error fetching event:", err);
+    res.status(500).json({ message: "Error fetching event" });
+  }
+});
+
+/* -------------------- GET ALL EVENTS -------------------- */
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT e.*, u.username AS created_by_username
+       FROM events e
+       LEFT JOIN users u ON e.created_by_user_id = u.id
+       ORDER BY e.start_time ASC`
+    );
+    res.json({ events: result.rows });
+  } catch (err) {
+    console.error("Error fetching events:", err);
+    res.status(500).json({ message: "Error fetching events" });
+  }
+});
+
+module.exports = router;

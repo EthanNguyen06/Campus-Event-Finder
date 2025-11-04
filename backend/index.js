@@ -1,48 +1,28 @@
 const express = require("express");
 const cors = require("cors");
-const pool = require("./db");
+const cookieParser = require("cookie-parser");
+const dotenv = require("dotenv");
+dotenv.config();
+
+const authRoutes = require("./routes/auth");
+const eventRoutes = require("./routes/events");
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
-// Basic test route
-app.get("/api/health", (req, res) => {
-  res.json({ status: "API working" });
-});
+// Allow frontend (important for cookies)
+app.use(
+  cors({
+    origin: "http://localhost:5173", // your React dev URL
+    credentials: true,
+  })
+);
 
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Backend running on http://localhost:${PORT}`);
-});
+app.use("/api/auth", authRoutes);
+app.use("/api/events", eventRoutes);
 
-// get all events, upcoming first
-app.get("/api/events", async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT id, title, description, start_time, end_time, location, category, image_url
-      FROM events
-      ORDER BY start_time ASC
-    `);
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-});
+app.get("/", (req, res) => res.send("Backend running"));
 
-// get one event by ID
-app.get("/api/events/:id", async (req, res) => {
-  try {
-    const { rows } = await pool.query(
-      `SELECT id, title, description, start_time, end_time, location, category, image_url
-       FROM events WHERE id = $1`,
-      [req.params.id]
-    );
-    if (!rows.length) return res.status(404).json({ error: "Not found" });
-    res.json(rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
-  }
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
