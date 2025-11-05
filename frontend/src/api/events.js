@@ -31,3 +31,33 @@ export async function createEvent(eventData) {
   }
   return await res.json();
 }
+
+// Update an existing event
+export async function updateEvent(id, eventData) {
+  const res = await fetch(`${API_BASE}/api/events/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(eventData),
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const errorBody = await res.json();
+    throw new Error(errorBody.message || "Failed to update event");
+  }
+  return await res.json();
+}
+
+// Delete an event
+export async function deleteEvent(id) {
+  const res = await fetch(`${API_BASE}/api/events/${id}`, {
+    method: "DELETE",
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const errorBody = await res.json();
+    throw new Error(errorBody.message || "Failed to delete event");
+  }
+  return await res.json();
+}

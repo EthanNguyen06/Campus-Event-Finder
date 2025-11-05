@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { createEvent } from "../api/events";
+import { createEvent, updateEvent } from "../api/events";
 import "../styles/EventForm.css";
 
-const EventForm = ({ eventToEdit }) => {
+const EventForm = ({ eventToEdit, onCancel }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
@@ -14,17 +14,25 @@ const EventForm = ({ eventToEdit }) => {
     category: "",
     image_url: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (eventToEdit) {
+      // Convert "YYYY-MM-DD HH:MM:SS" → "YYYY-MM-DDTHH:MM" for datetime-local
+      const formatForInput = (value) => {
+        if (!value) return "";
+        return value.replace(" ", "T").slice(0, 16);
+      };
+
       setFormData({
-        title: eventToEdit.title,
-        description: eventToEdit.description,
-        start_time: new Date(eventToEdit.start_time).toISOString().slice(0, 16),
-        end_time: new Date(eventToEdit.end_time).toISOString().slice(0, 16),
-        location: eventToEdit.location,
-        category: eventToEdit.category,
-        image_url: eventToEdit.image_url,
+        title: eventToEdit.title || "",
+        description: eventToEdit.description || "",
+        start_time: formatForInput(eventToEdit.start_time),
+        end_time: formatForInput(eventToEdit.end_time),
+        location: eventToEdit.location || "",
+        category: eventToEdit.category || "",
+        image_url: eventToEdit.image_url || "",
       });
     }
   }, [eventToEdit]);
@@ -32,21 +40,48 @@ const EventForm = ({ eventToEdit }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+
     try {
       const eventData = { ...formData };
-      const response = await createEvent(eventData);
-      navigate(`/events/${response.id}`);
-    } catch (error) {
-      console.error("Failed to create event", error);
+
+      if (eventToEdit) {
+        // Update existing event
+        const response = await updateEvent(eventToEdit.id, eventData);
+        navigate(`/events/${response.id}`);
+      } else {
+        // Create new event
+        const response = await createEvent(eventData);
+        navigate(`/events/${response.id}`);
+      }
+    } catch (err) {
+      console.error("Failed to save event", err);
+      setError(err.message || "Failed to save event");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    } else if (eventToEdit) {
+      navigate(`/events/${eventToEdit.id}`);
+    } else {
+      navigate("/events");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="event-form">
+      {error && <div className="error-message">{error}</div>}
+
       <label>
         Title
         <input
@@ -105,15 +140,32 @@ const EventForm = ({ eventToEdit }) => {
         />
       </label>
       <label>
-        Image URL
+        Image URL (optional)
         <input
           type="text"
           name="image_url"
           value={formData.image_url}
           onChange={handleChange}
+          placeholder="Leave empty for default image"
         />
       </label>
-      <button type="submit">Submit</button>
+      <div className="form-buttons">
+        <button type="submit" disabled={loading}>
+          {loading
+            ? "Saving..."
+            : eventToEdit
+            ? "Update Event"
+            : "Create Event"}
+        </button>
+        <button
+          type="button"
+          onClick={handleCancel}
+          disabled={loading}
+          className="btn-cancel"
+        >
+          Cancel
+        </button>
+      </div>
     </form>
   );
 };

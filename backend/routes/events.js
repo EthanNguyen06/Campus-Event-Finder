@@ -7,6 +7,8 @@ const path = require("path");
 
 const router = express.Router();
 
+const DEFAULT_EVENT_IMAGE = "https://www.vt.edu/content/vt_edu/en/about/traditions/_jcr_content/content/adaptiveimage_1451122130.transform/m-medium/image.jpg";
+
 /* -------------------- CREATE EVENT -------------------- */
 router.post("/", authenticate, async (req, res) => {
   try {
@@ -26,12 +28,14 @@ router.post("/", authenticate, async (req, res) => {
         .json({ message: "Title, start_time, end_time, and location are required." });
     }
 
+    const finalImageUrl = image_url || DEFAULT_EVENT_IMAGE;
+
     const result = await pool.query(
       `INSERT INTO events
         (title, description, category, location, start_time, end_time, image_url, created_by_user_id)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
-      [title, description, category, location, start_time, end_time, image_url, req.user.id]
+      [title, description, category, location, start_time, end_time, finalImageUrl, req.user.id]
     );
 
     const newEvent = result.rows[0];

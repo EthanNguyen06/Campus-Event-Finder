@@ -37,7 +37,6 @@
 }
 
 .event-form button {
-  width: 100%;
   padding: 0.875rem;
   background-color: #67002e;
   color: white;
@@ -49,6 +48,39 @@
   transition: background-color 0.2s;
 }
 
-.event-form button:hover {
+.event-form button:hover:not(:disabled) {
   background-color: #8b003b;
+}
+
+.event-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 1.5rem;
+}
+
+.form-buttons button {
+  flex: 1;
+  width: auto;
+}
+
+.btn-cancel {
+  background-color: #6b7280;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background-color: #4b5563;
+}
+
+.error-message {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #dc2626;
 }
