@@ -5,6 +5,7 @@ import EventMainPage from "./pages/EventMainPage";
 import EventDetailPage from "./pages/EventDetailsPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import CreateEventPage from "./pages/CreateEventPage";
 import { AuthProvider } from "./context/AuthContext";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/events" element={<EventMainPage />} />
+        <Route path="/events/new" element={<CreateEventPage />} />
         <Route path="/events/:id" element={<EventDetailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

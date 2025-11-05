@@ -4,16 +4,16 @@ import { listEvents } from "../api/events";
 import EventBox from "../components/EventBox";
 import FeatureCard from "../components/FeatureCard";
 import Navbar from "../components/Navbar";
-import { useAuth } from "../context/AuthContext"; // ✅ add this
+import { useAuth } from "../context/AuthContext"; 
 import "../styles/HomePage.css";
 
 export default function HomePage() {
   const [upcoming, setUpcoming] = useState([]);
-  const { user, isAuthenticated, loading } = useAuth(); // ✅ access auth state
+  const { user, isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
     (async () => {
-      const { events } = await listEvents();
+      const events = await listEvents();
       const nextThree = [...events]
         .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
         .slice(0, 3);
@@ -25,7 +25,6 @@ export default function HomePage() {
     <>
       <Navbar />
 
-      {/* HERO */}
       <header className="home-hero">
         <div className="home-hero-inner">
           <h1 className="home-title">Find Your Next Hokie Moment</h1>
@@ -48,7 +47,6 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* FEATURES */}
       <section className="home-section">
         <div className="section-header">
           <h2 className="section-title">Why use Event Finder?</h2>
@@ -73,7 +71,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* PREVIEW */}
       <section className="home-section">
         <div className="section-header">
           <h2 className="section-title">Coming up soon</h2>

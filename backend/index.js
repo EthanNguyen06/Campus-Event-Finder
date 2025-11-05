@@ -7,9 +7,6 @@ dotenv.config();
 const authRoutes = require("./routes/auth");
 const eventRoutes = require("./routes/events");
 
-const cookieParser = require('cookie-parser');
-require('dotenv').config();
-
 const app = express();
 app.use(express.json());
 app.use(cookieParser());

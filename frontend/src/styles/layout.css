@@ -12,8 +12,25 @@ body {
 }
 
 .page-title{
-  margin:100px 0 30px;
+  margin:100px 0 15px;
   color: #67002e;
   font-size:2.25rem;
   line-height:1.2;
+}
+
+.create-event-button {
+  margin-bottom: 10px;
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #67002e;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.create-event-button:hover {
+  background-color: #8b003b;
+  color: white;
 }
