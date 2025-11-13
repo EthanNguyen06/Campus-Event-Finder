@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../styles/RegisterPage.css";
+import { useAuth } from "../context/AuthContext";
+import { rsvpToEvent } from "../api/events";
 
 function RegisterPage() {
   const [username, setUsername] = useState("");
@@ -10,23 +12,9 @@ function RegisterPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
-  // --- API call to backend ---
-  async function registerUser(username, email, password) {
-    const res = await fetch(`${API_BASE}/api/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include", // keeps session cookies
-      body: JSON.stringify({ username, email, password }),
-    });
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      throw new Error(data.message || "Registration failed");
-    }
-    return res.json();
-  }
+  const { register } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // --- Handle Form Submit ---
   const handleSubmit = async (e) => {
@@ -40,12 +28,28 @@ function RegisterPage() {
       setLoading(true);
       setError("");
       setSuccess("");
-      const data = await registerUser(username, email, password);
-      setSuccess(data.message);
-      console.log("User created:", data.user);
+      
+      const registered = await register(username, email, password);
+      setSuccess("Account created successfully");
 
-      // redirect or auto-login after short delay
-      setTimeout(() => (window.location.href = "/"), 1000);
+      // If we came with an RSVP intent, auto-complete it
+      const state = location.state || {};
+      if (state.intent === "rsvp" && state.eventId && typeof state.attending === "boolean") {
+        // If this user is the event owner, do not auto-RSVP
+        if (state.createdBy && registered && registered.id === state.createdBy) {
+          // skip
+        } else {
+          try {
+            await rsvpToEvent(state.eventId, state.attending);
+          } catch (rsvpErr) {
+            console.warn("Post-register RSVP failed:", rsvpErr);
+          }
+        }
+      }
+
+      // Navigate back to where we came from, or home
+      const returnTo = (location.state && location.state.from) || "/";
+      navigate(returnTo, { replace: true });
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -106,7 +110,7 @@ function RegisterPage() {
         </form>
 
         <p className="login-link">
-          Already have an account? <Link to="/login">Login here</Link>
+          Already have an account? <Link to="/login" state={location.state}>Login here</Link>
         </p>
       </div>
     </>

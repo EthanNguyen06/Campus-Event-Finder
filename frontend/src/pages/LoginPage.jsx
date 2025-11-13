@@ -1,30 +1,18 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../styles/LoginPage.css";
+import { useAuth } from "../context/AuthContext";
+import { rsvpToEvent } from "../api/events";
 
 function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
-  // --- Login API Call ---
-  async function login(email, password) {
-    const res = await fetch(`${API_BASE}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include", // important for cookies
-      body: JSON.stringify({ email, password }),
-    });
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      throw new Error(data.message || "Login failed");
-    }
-    return res.json(); // returns user object
-  }
+  const { login } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // --- Handle Form Submission ---
   const handleSubmit = async (e) => {
@@ -37,14 +25,27 @@ function LoginPage() {
     try {
       setLoading(true);
       setError("");
-      const user = await login(username, password); // use username as email if your backend expects email
-      console.log("Logged in:", user);
 
-      // ✅ Option 1: Redirect to homepage or events page
-      window.location.href = "/";
+      const loggedIn = await login(username, password);
 
-      // ✅ Option 2: If you have a global AuthContext, update it here instead
-      // setUser(user);
+      // If we came here with an RSVP intent, auto-complete it
+      const state = location.state || {};
+      if (state.intent === "rsvp" && state.eventId && typeof state.attending === "boolean") {
+        // If this user is the event owner, do not auto-RSVP
+        if (state.createdBy && loggedIn && loggedIn.id === state.createdBy) {
+          // Navigate back
+        } else {
+        try {
+          await rsvpToEvent(state.eventId, state.attending);
+        } catch (rsvpErr) {
+          console.warn("Post-login RSVP failed:", rsvpErr);
+        }
+        }
+      }
+
+      // Navigate back to where we came from, or home
+      const returnTo = (location.state && location.state.from) || "/";
+      navigate(returnTo, { replace: true });
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -84,7 +85,7 @@ function LoginPage() {
 
           {/* 👇 Add this */}
           <p className="register-link">
-            Don’t have an account? <Link to="/register">Create one here</Link>
+            Don’t have an account? <Link to="/register" state={location.state}>Create one here</Link>
           </p>
         </form>
       </div>

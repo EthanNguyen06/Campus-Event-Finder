@@ -185,6 +185,67 @@ body {
   cursor: not-allowed;
 }
 
+.rsvp-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.rsvp-section h3 {
+  font-size: 1.25rem;
+  color: var(--brand);
+  margin-bottom: 12px;
+}
+
+.rsvp-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.btn-rsvp-yes,
+.btn-rsvp-no {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-rsvp-yes:hover:not(:disabled),
+.btn-rsvp-no:hover:not(:disabled) {
+  background-color: #e5e7eb;
+}
+
+.btn-rsvp-yes.active {
+  background-color: #16a34a;
+  color: white;
+  border-color: #16a34a;
+}
+
+.btn-rsvp-no.active {
+  background-color: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+
+.btn-rsvp-yes:disabled,
+.btn-rsvp-no:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.rsvp-feedback {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-top: 4px;
+  min-height: 1.2rem;
+}
+
+.rsvp-feedback.error {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+
 @media (max-width: 640px) {
   .event-hero img { height: 220px; }
   .event-title { font-size: 1.8rem; }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { getEvent, deleteEvent } from "../api/events";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { deleteEvent, getEvent, rsvpToEvent } from "../api/events";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import "../styles/EventDetailsPage.css";
@@ -26,11 +26,17 @@ export default function EventDetailPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // rsvp state
+  const [rsvpStatus, setRsvpStatus] = useState(null);
+  const [isRsvping, setIsRsvping] = useState(false);
+  const [rsvpError, setRsvpError] = useState("");
+
   useEffect(() => {
     (async () => {
       try {
         const e = await getEvent(id);
         setEvent(e);
+        setRsvpStatus(e.user_rsvp_status);
       } catch {
         setErr("Event not found");
       } finally {
@@ -66,18 +72,31 @@ export default function EventDetailPage() {
     setShowDeleteModal(false);
   };
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const e = await getEvent(id);
-        setEvent(e);
-      } catch {
-        setErr("Event not found");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [id]);
+  const handleRsvp = async (attending) => {
+    if (!isAuthenticated) {
+      // Preserve intent and return path for post-login auto-RSVP
+      navigate("/login", {
+        state: {
+          from: `/events/${id}`,
+          intent: "rsvp",
+          eventId: id,
+          attending,
+          createdBy: event?.created_by_user_id,
+        },
+      });
+      return;
+    }
+    setIsRsvping(true);
+    setRsvpError("");
+    try {
+      const updatedRsvp = await rsvpToEvent(id, attending);
+      setRsvpStatus(updatedRsvp.attending);
+    } catch (error) {
+      setRsvpError(error.message || "Failed to RSVP. Please try again.");
+    } finally {
+      setIsRsvping(false);
+    }
+  };
 
   return (
     <>
@@ -113,6 +132,38 @@ export default function EventDetailPage() {
               <p className="event-description">
                 {event.description || "No description provided."}
               </p>
+
+              {!isOwner && (
+                <div className="rsvp-section">
+                  <h3>Are you going?</h3>
+                  <div className="rsvp-actions">
+                    <button
+                      className={`btn btn-rsvp-yes ${rsvpStatus === true ? "active" : ""}`}
+                      onClick={() => handleRsvp(true)}
+                      disabled={isRsvping || rsvpStatus === true}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      className={`btn btn-rsvp-no ${rsvpStatus === false ? "active" : ""}`}
+                      onClick={() => handleRsvp(false)}
+                      disabled={isRsvping || rsvpStatus === false}
+                    >
+                      No
+                    </button>
+                  </div>
+                  {isRsvping && <p className="rsvp-feedback">Updating...</p>}
+                  {rsvpError && <p className="rsvp-feedback error">{rsvpError}</p>}
+                  {rsvpStatus !== null && !isRsvping && !rsvpError && (
+                    <p className="rsvp-feedback">
+                      {rsvpStatus ? "You're going!" : "You're not going."}
+                    </p>
+                  )}
+                  {!isAuthenticated && !isRsvping && !rsvpError && (
+                    <p className="rsvp-feedback">Log in to save your RSVP.</p>
+                  )}
+                </div>
+              )}
 
               {isOwner && (
                 <div className="event-actions">

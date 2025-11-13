@@ -10,7 +10,9 @@ export async function listEvents() {
 
 // Get event by ID
 export async function getEvent(id) {
-  const res = await fetch(`${API_BASE}/api/events/${id}`);
+  const res = await fetch(`${API_BASE}/api/events/${id}`, {
+    credentials: "include",  
+  });
   if (!res.ok) throw new Error("Event not found");
   return await res.json();
 }
@@ -61,3 +63,21 @@ export async function deleteEvent(id) {
   }
   return await res.json();
 }
+    
+// RSVP to an event
+export async function rsvpToEvent(id, attending) {
+  const res = await fetch(`${API_BASE}/api/events/${id}/rsvp`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+      body: JSON.stringify({ attending }),
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const errorBody = await res.json();
+      throw new Error(errorBody.message || "Failed to RSVP");
+    }
+    return await res.json();
+}
+    
