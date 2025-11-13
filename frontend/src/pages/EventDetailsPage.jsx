@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { deleteEvent, getEvent, rsvpToEvent } from "../api/events";
+import { deleteEvent, getEvent, rsvpToEvent, getEventAttendees } from "../api/events";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import "../styles/EventDetailsPage.css";
+import EventCreatorPanel from "../components/EventCreatorPanel";
 
 function formatRange(start, end) {
   const s = new Date(start);
@@ -31,19 +32,37 @@ export default function EventDetailPage() {
   const [isRsvping, setIsRsvping] = useState(false);
   const [rsvpError, setRsvpError] = useState("");
 
+  // attendees state
+  const [attendees, setAttendees] = useState([]);
+  const [loadingAttendees, setLoadingAttendees] = useState(false);
+  const [attendeesError, setAttendeesError] = useState("");
+
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const e = await getEvent(id);
         setEvent(e);
         setRsvpStatus(e.user_rsvp_status);
+
+        if (user && e.created_by_user_id === user.id) {
+          setLoadingAttendees(true);
+          try {
+            const fetchedAttendees = await getEventAttendees(id);
+            setAttendees(fetchedAttendees);
+          } catch (err) {
+            setAttendeesError(err.message || "Could not load attendees.");
+          } finally {
+            setLoadingAttendees(false);
+          }
+        }
       } catch {
         setErr("Event not found");
       } finally {
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [id, user]);
 
   const isOwner = isAuthenticated && user && event && event.created_by_user_id === user.id;
 
@@ -174,6 +193,14 @@ export default function EventDetailPage() {
                     🗑️ Delete Event
                   </button>
                 </div>
+              )}
+
+              {isOwner && (
+                <EventCreatorPanel
+                  attendees={attendees}
+                  loading={loadingAttendees}
+                  error={attendeesError}
+                />
               )}
 
               <Link className="back-link" to="/events">← Back to all events</Link>

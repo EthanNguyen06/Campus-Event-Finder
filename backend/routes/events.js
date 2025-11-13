@@ -203,6 +203,38 @@ router.post("/:id/rsvp", authenticate, async (req, res) => {
   }
 });
 
+/* -------------------- GET EVENT ATTENDEES (CREATOR ONLY) -------------------- */
+router.get("/:id/attendees", authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const event_id_int = parseInt(id, 10);
+    const { id: user_id } = req.user;
+
+    const eventResult = await pool.query("SELECT created_by_user_id FROM events WHERE id = $1", [event_id_int]);
+    if (eventResult.rows.length === 0) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const event = eventResult.rows[0];
+    if (event.created_by_user_id !== user_id) {
+      return res.status(403).json({ message: "Only the event creator can view attendees." });
+    }
+
+    const attendeesResult = await pool.query(
+      `SELECT u.email, r.attending
+       FROM rsvps r
+       JOIN users u ON r.user_id = u.id
+       WHERE r.event_id = $1`,
+      [event_id_int]
+    );
+
+    res.json(attendeesResult.rows);
+  } catch (err) {
+    console.error("Error fetching event attendees:", err);
+    res.status(500).json({ message: "Error fetching event attendees" });
+  }
+});
+
 /* -------------------- GET ALL EVENTS -------------------- */
 router.get("/", async (req, res) => {
   try {

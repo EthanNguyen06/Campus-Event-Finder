@@ -1,0 +1,84 @@
+.creator-panel {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.creator-panel h2 {
+  font-size: 1.5rem;
+  color: var(--brand);
+  margin-bottom: 16px;
+}
+
+.creator-panel h3 {
+  font-size: 1.25rem;
+  color: var(--brand);
+  margin-top: 20px;
+  margin-bottom: 12px;
+}
+
+.attendee-summary {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.attendee-summary p {
+  margin: 0;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.attendee-summary p strong {
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.attendee-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.attendee-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.attendee-list li:last-child {
+  border-bottom: none;
+}
+
+.attendee-list li.attending {
+  background-color: #f0fdf4;
+}
+
+.attendee-list li.not-attending {
+  background-color: #fef2f2;
+}
+
+.attendee-list li span:first-child {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.attendee-list li.attending span:last-child {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.attendee-list li.not-attending span:last-child {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.creator-panel .error {
+  color: #dc2626;
+  font-weight: 600;
+}
