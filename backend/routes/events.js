@@ -1,6 +1,7 @@
 const express = require("express");
 const pool = require("../db");
 const authenticate = require("../middleware/authenticate");
+const optionalAuth = require("../middleware/optionalAuth");
 const upload = require("../middleware/upload");
 const fs = require("fs");
 const path = require("path");
@@ -125,22 +126,80 @@ router.delete("/:id", authenticate, async (req, res) => {
 });
 
 /* -------------------- GET ONE EVENT -------------------- */
-router.get("/:id", async (req, res) => {
+router.get("/:id", optionalAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query(
-      `SELECT e.*, u.username AS created_by_username
-       FROM events e
-       LEFT JOIN users u ON e.created_by_user_id = u.id
-       WHERE e.id = $1`,
-      [id]
-    );
-    if (result.rows.length === 0)
+    const user_id = req.user?.id;
+    const event_id_int = parseInt(id, 10);
+
+    let query;
+    const params = [event_id_int];
+
+    if (user_id) {
+      query = `
+        SELECT e.*, u.username AS created_by_username, r.attending AS user_rsvp_status
+        FROM events e
+        LEFT JOIN users u ON e.created_by_user_id = u.id
+        LEFT JOIN rsvps r ON e.id = r.event_id AND r.user_id = $2
+        WHERE e.id = $1
+      `;
+      params.push(user_id);
+    } else {
+      query = `
+        SELECT e.*, u.username AS created_by_username, NULL AS user_rsvp_status
+        FROM events e
+        LEFT JOIN users u ON e.created_by_user_id = u.id
+        WHERE e.id = $1
+      `;
+    }
+
+    const result = await pool.query(query, params);
+    if (result.rows.length === 0) {
       return res.status(404).json({ message: "Event not found" });
-    res.json(result.rows[0]);
+    }
+
+    const event = result.rows[0];
+    res.json(event);
   } catch (err) {
     console.error("Error fetching event:", err);
     res.status(500).json({ message: "Error fetching event" });
+  }
+});
+
+/* -------------------- RSVP to an EVENT -------------------- */
+router.post("/:id/rsvp", authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const event_id_int = parseInt(id, 10);
+    const { id: user_id } = req.user;
+    const { attending } = req.body;
+
+    if (typeof attending !== "boolean") {
+      return res.status(400).json({ message: "Attending must be a boolean value" });
+    }
+
+    // Prevent event owners from RSVPing to their own event
+    const evRes = await pool.query("SELECT created_by_user_id FROM events WHERE id = $1", [event_id_int]);
+    if (evRes.rows.length === 0) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    if (evRes.rows[0].created_by_user_id === user_id) {
+      return res.status(403).json({ message: "You cannot RSVP to your own event" });
+    }
+
+    const rsvpResult = await pool.query(
+      `INSERT INTO rsvps (user_id, event_id, attending)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (user_id, event_id)
+       DO UPDATE SET attending = $3, updated_at = NOW()
+       RETURNING *`,
+      [user_id, event_id_int, attending]
+    );
+
+    res.status(200).json(rsvpResult.rows[0]);
+  } catch (err) {
+    console.error("Error creating or updating RSVP:", err);
+    res.status(500).json({ message: "Error creating or updating RSVP" });
   }
 });
 
