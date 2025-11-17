@@ -80,4 +80,16 @@ export async function rsvpToEvent(id, attending) {
     }
     return await res.json();
 }
+
+// Get event attendees (creator only)
+export async function getEventAttendees(id) {
+  const res = await fetch(`${API_BASE}/api/events/${id}/attendees`, {
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const errorBody = await res.json();
+    throw new Error(errorBody.message || "Failed to fetch attendees");
+  }
+  return await res.json();
+}
     
