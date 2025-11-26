@@ -8,6 +8,8 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const onHome = pathname === "/" || pathname === "/home";
+  const onDashboard = pathname === "/dashboard";
+
 
   return (
     <nav className="navbar">

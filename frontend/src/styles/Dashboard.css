@@ -1,0 +1,197 @@
+/* ========== PERSONAL DASHBOARD STYLES ========== */
+
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #f4f4f4;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 40px;
+}
+
+.dashboard-header {
+  margin-bottom: 40px;
+}
+
+.dashboard-title {
+  color: #630031;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.dashboard-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Section Styles */
+.dashboard-section {
+  margin-bottom: 50px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 3px solid #630031;
+}
+
+.section-icon {
+  color: #CF4420;
+  font-size: 28px;  
+  flex-shrink: 0;
+}
+
+.section-title {
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.event-count {
+  background-color: #630031;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-left: auto;
+}
+
+/* Events Grid for Dashboard */
+.dashboard-section .events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+}
+
+.empty-message {
+  color: #999;
+  font-size: 1.1rem;
+  padding: 40px;
+  text-align: center;
+  background-color: white;
+  border-radius: 12px;
+  grid-column: 1 / -1;
+  border: 2px dashed #ddd;
+}
+
+/* Dashboard Event Card */
+.dashboard-section .event-card {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.dashboard-section .event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(99, 0, 49, 0.15);
+}
+
+.dashboard-section .event-card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.dashboard-section .event-card-content {
+  padding: 20px;
+}
+
+.dashboard-section .event-card-title {
+  color: #630031;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.dashboard-section .event-card-info {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Event Card Actions */
+.event-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn-edit {
+  flex: 1;
+  background-color: #CF4420;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-edit:hover {
+  background-color: #b33a1a;
+}
+
+.btn-remove {
+  flex: 1;
+  background-color: transparent;
+  color: #dc3545;
+  border: 2px solid #dc3545;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-remove:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Responsive Dashboard */
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 30px 20px;
+  }
+
+  .dashboard-title {
+    font-size: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-section .events-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
