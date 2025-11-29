@@ -37,11 +37,17 @@ export default function HomePage() {
               Browse Events
             </Link>
 
-            {/* 👇 Only show Sign In if not authenticated */}
-            {!loading && !isAuthenticated && (
-              <Link to="/login" className="cta cta-secondary">
-                Sign In
-              </Link>
+            {/* Show Dashboard if authenticated, Sign In if not */}
+            {!loading && (
+              isAuthenticated ? (
+                <Link to="/dashboard" className="cta cta-secondary">
+                  My Dashboard
+                </Link>
+              ) : (
+                <Link to="/login" className="cta cta-secondary">
+                  Sign In
+                </Link>
+              )
             )}
           </div>
         </div>
@@ -60,7 +66,7 @@ export default function HomePage() {
           />
           <FeatureCard
             title="Save & RSVP"
-            text="Keep a personal list and let organizers know you’re coming."
+            text="Keep a personal list and let organizers know you're coming."
             emoji="📌"
           />
           <FeatureCard

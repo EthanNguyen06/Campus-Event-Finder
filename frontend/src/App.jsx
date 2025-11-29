@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import CreateEventPage from "./pages/CreateEventPage";
 import EditEventPage from "./pages/EditEventPage";
+import Dashboard from "./pages/Dashboard";  // ADD THIS LINE
 import { AuthProvider } from "./context/AuthContext";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/events/new" element={<CreateEventPage />} />
         <Route path="/events/:id" element={<EventDetailPage />} />
         <Route path="/events/:id/edit" element={<EditEventPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />  {/* ADD THIS LINE */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="*" element={<div className="container">Not found</div>} />

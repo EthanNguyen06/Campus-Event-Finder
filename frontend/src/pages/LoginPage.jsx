@@ -44,7 +44,7 @@ function LoginPage() {
       }
 
       // Navigate back to where we came from, or home
-      const returnTo = (location.state && location.state.from) || "/";
+      const returnTo = (location.state && location.state.from) || "/dashboard";
       navigate(returnTo, { replace: true });
     } catch (err) {
       console.error(err);
