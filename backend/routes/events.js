@@ -137,16 +137,18 @@ router.get("/:id", optionalAuth, async (req, res) => {
 
     if (user_id) {
       query = `
-        SELECT e.*, u.username AS created_by_username, r.attending AS user_rsvp_status
+        SELECT e.*, u.username AS created_by_username, r.attending AS user_rsvp_status,
+               (b.id IS NOT NULL) AS user_saved
         FROM events e
         LEFT JOIN users u ON e.created_by_user_id = u.id
         LEFT JOIN rsvps r ON e.id = r.event_id AND r.user_id = $2
+        LEFT JOIN bookmarks b ON e.id = b.event_id AND b.user_id = $2
         WHERE e.id = $1
       `;
       params.push(user_id);
     } else {
       query = `
-        SELECT e.*, u.username AS created_by_username, NULL AS user_rsvp_status
+        SELECT e.*, u.username AS created_by_username, NULL AS user_rsvp_status, false AS user_saved
         FROM events e
         LEFT JOIN users u ON e.created_by_user_id = u.id
         WHERE e.id = $1
@@ -163,6 +165,64 @@ router.get("/:id", optionalAuth, async (req, res) => {
   } catch (err) {
     console.error("Error fetching event:", err);
     res.status(500).json({ message: "Error fetching event" });
+  }
+});
+
+/* -------------------- SAVE / UNSAVE (BOOKMARK) EVENT -------------------- */
+// Save/bookmark an event for the authenticated user
+router.post("/:id/save", authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const event_id_int = parseInt(id, 10);
+    const { id: user_id } = req.user;
+
+    // Ensure event exists
+    const evRes = await pool.query("SELECT id FROM events WHERE id = $1", [event_id_int]);
+    if (evRes.rows.length === 0) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const insertRes = await pool.query(
+      `INSERT INTO bookmarks (user_id, event_id)
+       VALUES ($1, $2)
+       ON CONFLICT (user_id, event_id) DO NOTHING
+       RETURNING *`,
+      [user_id, event_id_int]
+    );
+
+    // If nothing returned, it already existed
+    if (insertRes.rows.length === 0) {
+      return res.status(200).json({ saved: true });
+    }
+
+    res.status(201).json({ saved: true, bookmark: insertRes.rows[0] });
+  } catch (err) {
+    console.error("Error saving bookmark:", err);
+    res.status(500).json({ message: "Error saving bookmark" });
+  }
+});
+
+// Unsave/remove bookmark for authenticated user
+router.delete("/:id/save", authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const event_id_int = parseInt(id, 10);
+    const { id: user_id } = req.user;
+
+    const delRes = await pool.query(
+      `DELETE FROM bookmarks WHERE user_id = $1 AND event_id = $2 RETURNING *`,
+      [user_id, event_id_int]
+    );
+
+    if (delRes.rows.length === 0) {
+      // nothing to delete
+      return res.status(200).json({ saved: false });
+    }
+
+    res.json({ saved: false });
+  } catch (err) {
+    console.error("Error removing bookmark:", err);
+    res.status(500).json({ message: "Error removing bookmark" });
   }
 });
 

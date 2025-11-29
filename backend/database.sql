@@ -34,6 +34,15 @@ CREATE TABLE rsvps (
   UNIQUE (user_id, event_id)
 );
 
+-- Table to store saved/bookmarked events by users
+CREATE TABLE bookmarks (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (user_id, event_id)
+);
+
 -- Insert sample events
 -- INSERT INTO events (id, title, description, start_time, end_time, location, category, image_url) VALUES
 -- (1, 'Fall Concert', 'Live bands and food trucks on the quad.',

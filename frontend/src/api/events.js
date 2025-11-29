@@ -17,6 +17,32 @@ export async function getEvent(id) {
   return await res.json();
 }
 
+// Save/bookmark an event for the authenticated user
+export async function saveEvent(id) {
+  const res = await fetch(`${API_BASE}/api/events/${id}/save`, {
+    method: "POST",
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const errorBody = await res.json();
+    throw new Error(errorBody.message || "Failed to save event");
+  }
+  return await res.json();
+}
+
+// Unsave/remove bookmark
+export async function unsaveEvent(id) {
+  const res = await fetch(`${API_BASE}/api/events/${id}/save`, {
+    method: "DELETE",
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const errorBody = await res.json();
+    throw new Error(errorBody.message || "Failed to unsave event");
+  }
+  return await res.json();
+}
+
 // Create a new event
 export async function createEvent(eventData) {
   const res = await fetch(`${API_BASE}/api/events`, {
