@@ -19,12 +19,13 @@
 .dashboard-title {
   color: #630031;
   font-size: 2.5rem;
+  margin-top: 70px;
   margin-bottom: 10px;
   font-weight: bold;
 }
 
 .dashboard-subtitle {
-  color: #666;
+  color: #000000;
   font-size: 1.1rem;
 }
 
