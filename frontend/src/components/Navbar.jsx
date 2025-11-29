@@ -8,6 +8,7 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const onHome = pathname === "/" || pathname === "/home";
+  const onDashboard = pathname === "/dashboard";
 
   return (
     <nav className="navbar">
@@ -25,6 +26,13 @@ export default function Navbar() {
         <Link className="nav-button" to="/events">
           Events
         </Link>
+
+        {/* Dashboard button - ADD THIS SECTION */}
+        {user && (
+          <Link className={`nav-button ${onDashboard ? "active" : ""}`} to="/dashboard">
+            Dashboard
+          </Link>
+        )}
 
         {/* Conditional Auth Section */}
         {user ? (
