@@ -1,3 +1,4 @@
+// all test cases generated with ChatGPT with prompt "Generate Jest test cases for Express.js REST API with Supertest"
 const request = require("supertest");
 const app = require("../index"); // export your express app
 const pool = require("../db");
