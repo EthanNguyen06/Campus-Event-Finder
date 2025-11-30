@@ -118,4 +118,34 @@ export async function getEventAttendees(id) {
   }
   return await res.json();
 }
+
+// Get events the current user has saved
+export async function getMySavedEvents() {
+  const res = await fetch(`${API_BASE}/api/events/mine/saved`, {
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to load saved events");
+  const data = await res.json();
+  return data.events;
+}
+
+// Get events the current user has RSVP'd to
+export async function getMyRsvpEvents() {
+  const res = await fetch(`${API_BASE}/api/events/mine/rsvps`, {
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to load RSVP'd events");
+  const data = await res.json();
+  return data.events;
+}
+
+// Get events the current user has created
+export async function getMyCreatedEvents() {
+  const res = await fetch(`${API_BASE}/api/events/mine/created`, {
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to load created events");
+  const data = await res.json();
+  return data.events;
+}
     

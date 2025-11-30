@@ -295,6 +295,72 @@ router.get("/:id/attendees", authenticate, async (req, res) => {
   }
 });
 
+/* -------------------- MY SAVED EVENTS -------------------- */
+router.get("/mine/saved", authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await pool.query(
+      `SELECT e.*, u.username AS created_by_username
+       FROM bookmarks b
+       JOIN events e ON b.event_id = e.id
+       LEFT JOIN users u ON e.created_by_user_id = u.id
+       WHERE b.user_id = $1
+       ORDER BY e.start_time ASC`,
+      [userId]
+    );
+
+    res.json({ events: result.rows });
+  } catch (err) {
+    console.error("Error fetching saved events:", err);
+    res.status(500).json({ message: "Error fetching saved events" });
+  }
+});
+
+/* -------------------- MY RSVP'D EVENTS -------------------- */
+router.get("/mine/rsvps", authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await pool.query(
+      `SELECT e.*, u.username AS created_by_username, r.attending
+       FROM rsvps r
+       JOIN events e ON r.event_id = e.id
+       LEFT JOIN users u ON e.created_by_user_id = u.id
+       WHERE r.user_id = $1 AND r.attending = TRUE
+       ORDER BY e.start_time ASC`,
+      [userId]
+    );
+
+    res.json({ events: result.rows });
+  } catch (err) {
+    console.error("Error fetching RSVP'd events:", err);
+    res.status(500).json({ message: "Error fetching RSVP'd events" });
+  }
+});
+
+/* -------------------- MY CREATED EVENTS -------------------- */
+router.get("/mine/created", authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await pool.query(
+      `SELECT e.*, u.username AS created_by_username
+       FROM events e
+       LEFT JOIN users u ON e.created_by_user_id = u.id
+       WHERE e.created_by_user_id = $1
+       ORDER BY e.start_time ASC`,
+      [userId]
+    );
+
+    res.json({ events: result.rows });
+  } catch (err) {
+    console.error("Error fetching created events:", err);
+    res.status(500).json({ message: "Error fetching created events" });
+  }
+});
+
+
 /* -------------------- GET ALL EVENTS -------------------- */
 router.get("/", async (req, res) => {
   try {
