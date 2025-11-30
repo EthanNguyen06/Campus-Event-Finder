@@ -32,6 +32,51 @@ body {
   padding: 22px 26px 28px;
 }
 
+/* Allow absolutely-positioned controls inside the card */
+.event-content {
+  position: relative;
+}
+
+.save-wrapper {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.btn-save {
+  background-color: #f3f4f6;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.btn-save:hover:not(:disabled) {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.btn-save.active {
+  background-color: #fde68a; /* highlighted when saved */
+  border-color: #f59e0b;
+}
+
+.save-feedback {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.save-feedback.error {
+  color: #dc2626;
+  font-weight: 700;
+}
+
 .event-title {
   font-size: 2.25rem;
   line-height: 1.2;
@@ -264,5 +309,12 @@ body {
   
   .modal-actions .btn {
     width: 100%;
+  }
+
+  /* Move save button into normal flow on small screens */
+  .save-wrapper {
+    position: static;
+    align-items: flex-start;
+    margin-bottom: 12px;
   }
 }

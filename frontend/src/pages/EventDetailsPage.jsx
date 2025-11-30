@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { deleteEvent, getEvent, rsvpToEvent, getEventAttendees } from "../api/events";
+import { deleteEvent, getEvent, rsvpToEvent, getEventAttendees, saveEvent, unsaveEvent } from "../api/events";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import "../styles/EventDetailsPage.css";
@@ -36,6 +36,11 @@ export default function EventDetailPage() {
   const [attendees, setAttendees] = useState([]);
   const [loadingAttendees, setLoadingAttendees] = useState(false);
   const [attendeesError, setAttendeesError] = useState("");
+  
+  // saved/bookmark state
+  const [saved, setSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -44,6 +49,7 @@ export default function EventDetailPage() {
         const e = await getEvent(id);
         setEvent(e);
         setRsvpStatus(e.user_rsvp_status);
+          setSaved(Boolean(e.user_saved));
 
         if (user && e.created_by_user_id === user.id) {
           setLoadingAttendees(true);
@@ -117,6 +123,35 @@ export default function EventDetailPage() {
     }
   };
 
+  const handleToggleSave = async () => {
+    if (!isAuthenticated) {
+      navigate("/login", {
+        state: {
+          from: `/events/${id}`,
+          intent: "save",
+          eventId: id,
+        },
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError("");
+    try {
+      if (!saved) {
+        await saveEvent(id);
+        setSaved(true);
+      } else {
+        await unsaveEvent(id);
+        setSaved(false);
+      }
+    } catch (error) {
+      setSaveError(error.message || "Failed to update saved status.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -138,6 +173,23 @@ export default function EventDetailPage() {
             </div>
 
             <div className="event-content">
+              {/* Save button positioned top-right */}
+              {!isOwner && (
+                <div className="save-wrapper">
+                  <button
+                    className={`btn btn-save ${saved ? "active" : ""}`}
+                    onClick={handleToggleSave}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? (saved ? "Unsaving..." : "Saving...") : (saved ? "Unsave" : "Save")}
+                  </button>
+                  {saveError && <p className="save-feedback error">{saveError}</p>}
+                  {!isAuthenticated && !isSaving && (
+                    <p className="save-feedback">Log in to save events.</p>
+                  )}
+                </div>
+              )}
+
               <h1 className="event-title">{event.title}</h1>
               <div className="event-meta">
                 { event.start_time && event.end_time
@@ -181,6 +233,7 @@ export default function EventDetailPage() {
                   {!isAuthenticated && !isRsvping && !rsvpError && (
                     <p className="rsvp-feedback">Log in to save your RSVP.</p>
                   )}
+                  
                 </div>
               )}
 
