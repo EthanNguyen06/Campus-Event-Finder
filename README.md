@@ -58,7 +58,7 @@ http://localhost:5173/
 ```
 ---
 
-### How to Run Unit Tests
+## How to Run Unit Tests
 From the root of the project:
 
 ```bash
