@@ -63,7 +63,7 @@ router.patch("/:id", authenticate, upload.single("image"), async (req, res) => {
     // Handle image replacement
     let image_url = event.image_url;
     if (req.file) {
-      if (image_url) {
+      if (image_url && !image_url.startsWith("http")) {
         const oldPath = path.join(__dirname, "../", image_url);
         fs.unlink(oldPath, (err) => {
           if (err) console.warn("Failed to delete old image:", err.message);

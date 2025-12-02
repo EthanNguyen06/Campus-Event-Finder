@@ -38,5 +38,14 @@ app.use("/api/events", eventRoutes);
 
 app.get("/", (req, res) => res.send("Backend running"));
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
+/* ------------------------------------------------------------
+   ONLY start the server if not running inside Jest tests
+-------------------------------------------------------------*/
+if (process.env.NODE_ENV !== "test") {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => 
+    console.log(`Backend running on http://localhost:${PORT}`)
+  );
+}
+
+module.exports = app;
