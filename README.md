@@ -20,9 +20,9 @@ JWT_SECRET=<JWT_SECRET should be a long random string (at least 32 chars)>
 > * Never commit `.env` files to GitHub.
 
 
-### run the backend
+### Run the Backend
 
-Start the server:
+Start the erver:
 
 ```bash
 npm run dev
@@ -43,10 +43,25 @@ cd frontend
 npm install
 ```
 
-### run the frontend
+### Run the Frontend
 
 Start the server:
 
 ```bash
 npm run dev
+```
+
+The frontend runs at:
+
+```
+http://localhost:5173/
+```
+---
+
+### How to Run Unit Tests
+From the root of the project:
+
+```bash
+cd backend
+npm test
 ```
